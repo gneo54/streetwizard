@@ -13,7 +13,7 @@ var RESPONSES = [
     "For Sure.",
     "Hell Yeah Son.",
     "Nah, Nope.",
-    "Yes sir!",
+    "yiss ir",
     "But of course my Gee.",
     "Sorry my dude.",
     "It ain't looking good."    
@@ -41,7 +41,7 @@ var handlers = {
         // Create speech output
         var speechOutput = randomResponse;
 
-        this.emit(':tellWithCard', speechOutput, SKILL_NAME, randomFact);
+        this.emit(':tellWithCard', speechOutput, SKILL_NAME, randomResponse);
     },
     'AMAZON.HelpIntent': function () {
         var speechOutput = "You can say tell me a space fact, or, you can say exit... What can I help you with?";
