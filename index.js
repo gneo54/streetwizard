@@ -37,11 +37,13 @@ var handlers = {
         // Get a random space fact from the space facts list
         //var responseIndex = Math.floor(Math.random() * RESPONSES.length);
         //var randomResponse = RESPONSES[responseIndex];
-        var welcomeResponse = "Ask me any yes or no question and I will answer it, or you can say exit. Ask me a yes or no question.";
+        var welcomeResponse = "Ask Street Wizard a yes or no question and I will answer it, or you can say exit. Ask me a yes or no question.";
         // Create speech output
+        var reprompt = "Ask a yes or no question.";
         var speechOutput = welcomeResponse;
 
-        this.emit(':tellWithCard', speechOutput, SKILL_NAME, welcomeResponse);
+        this.emit(':ask', speechOutput, reprompt);
+        //this.emit(':tellWithCard', speechOutput, SKILL_NAME, welcomeResponse);
     },
     'GetResponse': function () {
         // Get a random space fact from the space facts list
@@ -55,8 +57,8 @@ var handlers = {
     },
     'AMAZON.HelpIntent': function () {
         //var speechOutput = "You can say tell me a space fact, or, you can say exit... What can I help you with?";
-        var speechOutput = "Ask me any yes or no question and I will answer it, or you can say exit. Ask me a yes or no question.";
-        var reprompt = "Ask me a yes or no question.";
+        var speechOutput = "Ask Street Wizard a yes or no question and I will answer it, or you can say exit. Ask me a yes or no question.";
+        var reprompt = "Ask a yes or no question.";
         this.emit(':ask', speechOutput, reprompt);
     },
     'AMAZON.CancelIntent': function () {
