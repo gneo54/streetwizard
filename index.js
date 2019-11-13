@@ -7,6 +7,25 @@ const numeral = require('numeral');
 
 const skillName = 'Street Wizard';
 
+var RESPONSES = [
+    "No Doubt.",    
+    "Nah, Nope.",
+    "It ain't looking good."    
+];
+
+var RESPONSES_MORE = [
+    "No Doubt.",
+    "Oh, without a doubt.",
+    "For Sure.",
+    "Hell Yeah Son.",
+    "Nah, Nope.",
+    "yissir.",
+    "But of course my Gee.",
+    "Sorry my dude.",
+    "It ain't looking good.",
+    "Correct!"    
+];
+
 function getAllEntitledProducts(inSkillProductList) {
     const entitledProductList = inSkillProductList.filter(record => record.entitled === 'ENTITLED');
     return entitledProductList;
@@ -15,6 +34,7 @@ function getAllPurchasableProducts(inSkillProductList) {
     const entitledProductList = inSkillProductList.filter(record => record.purchasable === 'PURCHASABLE');
     return entitledProductList;
 }
+
 
 /*
     Helper function that returns a speakable list of product names from a list of
@@ -25,8 +45,8 @@ const msgDirection = 'Ask Street Wizard a yes or no question.' ;
 const msgDefault = 'Ask Street Wizard a yes or no question and you will get 1 of 3 different answers.';
 const msgUnlocked = 'Ask Street Wizard a yes or no question and you will get 1 of 10 different answers.';
 const msgUpsell = ' to unlock more answers, say, what can I buy?';
-const msgProduct = 'You can unlock 10 different answers instead of having 3 possible answers by saying, Buy More Answers '
-const msgStop = ' or to stop, say, stop';
+const msgProduct = 'You can unlock 10 different answers instead of having 3 possible answers by saying, Buy More Answers. '
+const msgStop = ' or to stop, say, stop.';
 const msgPrompt = ' What would you like to do?';
 
 /*
@@ -96,14 +116,14 @@ const LaunchRequestISPHandler = {
     handle(handlerInput) {
         
         if (handlerInput.requestEnvelope.request.payload.purchaseResult === 'ALREADY_PURCHASED') {
-            const speakOutputProduct = msgDefault + msgPrompt;//' Just say, summarize.';
+            const speakOutputProduct = msgUnlocked + msgStop + msgPrompt;//' Just say, summarize.';
             return handlerInput.responseBuilder
                 .speak(speakOutputProduct)
                 .reprompt(speakOutputProduct)
                 .getResponse();
         }
         else if (handlerInput.requestEnvelope.request.payload.purchaseResult === 'ACCEPTED') {
-            const speakOutputProduct = msgDefault + msgPrompt;//' Just say, summarize.';
+            const speakOutputProduct = msgUnlocked + msgStop + msgPrompt;//' Just say, summarize.';
             return handlerInput.responseBuilder
                 .speak(speakOutputProduct)
                 .reprompt(speakOutputProduct)
@@ -111,7 +131,7 @@ const LaunchRequestISPHandler = {
 
         }
         else if (handlerInput.requestEnvelope.request.payload.purchaseResult === 'DECLINED') {
-            const speakOutputProduct = msgDefault + msgPrompt;//' You can still get a summary of the top 3 coins. Just say, summarize';
+            const speakOutputProduct = msgDefault + msgStop + msgPrompt;//' You can still get a summary of the top 3 coins. Just say, summarize';
             return handlerInput.responseBuilder
                 .speak(speakOutputProduct)
                 .reprompt(speakOutputProduct)
@@ -143,7 +163,7 @@ const LaunchRequestHandler = {
                 // Customer owns one or more products
                 
                 const speakOutputProduct = `Welcome to ${skillName}. You currently own the More Answers add-on so you will get 1 of 10 possible answers. ` +
-                msgDirection + msgPrompt;//' Just say, summarize.';
+                msgDirection + msgStop + msgPrompt;//' Just say, summarize.';
                 return handlerInput.responseBuilder
                     .speak(speakOutputProduct)
                     .reprompt(speakOutputProduct)
@@ -207,12 +227,12 @@ const startIntentHandler = {
             //var speakOutputProduct = await getTopCoinsText(entitledProducts && entitledProducts.length > 0);
             var speakOutputProduct = randomResponse;
 
-            speakOutputProduct += ' Ask another question. ' + msgStop;//To hear this summary again, Just say, summarize. To stop, say, stop.';
+            speakOutputProduct += ' Ask another yes or no question. ' + msgStop;//To hear this summary again, Just say, summarize. To stop, say, stop.';
                     
                     
                     if (entitledProducts && entitledProducts.length > 0) {
                         // Customer owns one or more products
-
+                        speakOutputProduct += msgPrompt;
                         return handlerInput.responseBuilder
                             .speak(speakOutputProduct)
                             .reprompt(speakOutputProduct)
@@ -223,7 +243,7 @@ const startIntentHandler = {
                     console.log('Regular Game');
                     
             if (purchasableProducts && purchasableProducts.length > 0) {
-                speakOutputProduct +=  msgUpsell;// or you can say, What can I buy.'
+                speakOutputProduct +=  msgUpsell + msgPrompt;// or you can say, What can I buy.'
             }
                     return handlerInput.responseBuilder
                         .speak(speakOutputProduct)
@@ -263,7 +283,7 @@ const WhatCanIBuyIntentHandler = {
 
                 
                 if (!voicePurchaseSetting) {
-                    const cannotBuy = 'Sorry, In-Skill Purchasing is disabled. ' + msgDefault + msgStop;// To hear a summary of the top 3 coins, just say, summarize. To stop, say, stop.';
+                    const cannotBuy = 'Sorry, In-Skill Purchasing is disabled. ' + msgDefault + msgStop + msgPrompt;// To hear a summary of the top 3 coins, just say, summarize. To stop, say, stop.';
 
                     return handlerInput.responseBuilder
                         .speak(cannotBuy)
@@ -275,7 +295,7 @@ const WhatCanIBuyIntentHandler = {
                 if (entitledProducts && entitledProducts.length > 0) {
                     // Customer owns one or more products
 
-                    const speakOutputProduct = 'You already own the More Answers add-on. ' + msgDirection + msgStop;
+                    const speakOutputProduct = 'You already own the More Answers add-on. ' + msgDirection + msgStop + msgPrompt;
 
                     return handlerInput.responseBuilder
                         .speak(speakOutputProduct)
@@ -285,7 +305,7 @@ const WhatCanIBuyIntentHandler = {
 
                 // Not entitled to anything yet.
                 console.log('pitch');
-                const speakOutputNoProduct = msgProduct;//'You can hear a summary of the top five coins based on market cap by saying, Buy Top Five Coins. To hear a summary of only the top 3, just say, summarize. To stop, say, stop.';
+                const speakOutputNoProduct = msgProduct + msgPrompt;//'You can hear a summary of the top five coins based on market cap by saying, Buy Top Five Coins. To hear a summary of only the top 3, just say, summarize. To stop, say, stop.';
                 
                 return handlerInput.responseBuilder
                     .speak(speakOutputNoProduct)
@@ -316,7 +336,7 @@ const BuyLongerGameIntentHandler = {
                 name: "Buy",
                 payload: {
                     InSkillProduct: {
-                        productId: "amzn1.adg.product.cbe11ea4-2ed8-4ca2-8023-df659d44cc1c",
+                        productId: "amzn1.adg.product.5a8097e4-e89e-40c3-a7d1-1d5579227562",
                     }
                 },
                 token: "correlationToken"
@@ -342,7 +362,7 @@ const CancelTopFiveIntentHandler = {
                 name: "Cancel",
                 payload: {
                     InSkillProduct: {
-                        productId: "amzn1.adg.product.cbe11ea4-2ed8-4ca2-8023-df659d44cc1c",
+                        productId: "amzn1.adg.product.5a8097e4-e89e-40c3-a7d1-1d5579227562",
                     }
                 },
                 token: "correlationToken"
