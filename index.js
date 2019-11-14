@@ -381,9 +381,18 @@ const HelpIntentHandler = {
         const ms = handlerInput.serviceClientFactory.getMonetizationServiceClient();
         const voicePurchaseSetting = await ms.getVoicePurchaseSetting();
 
+        const locale = handlerInput.requestEnvelope.request.locale;
+
+        const productResult = await ms.getInSkillProducts(locale);
+
+        const entitledProducts = getAllEntitledProducts(productResult.inSkillProducts);
+        const purchasableProducts = getAllPurchasableProducts(productResult.inSkillProducts);
+
+        var doUpsell = (entitledProducts && purchasableProducts > 0) && (entitledProducts && entitledProducts.length == 0);
+                
         var speakOutput = msgDirection;// 'You can hear a summary of the top 3 coins by market cap, just say, summarize.';
 
-        if (voicePurchaseSetting) {
+        if (voicePurchaseSetting && doUpsell) {
             speakOutput += msgUpsell;//' or you can say, What can I buy.';
         }
         speakOutput += msgPrompt;//' What would you like to do? ';
